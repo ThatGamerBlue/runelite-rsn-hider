@@ -24,6 +24,7 @@
  */
 package com.thatgamerblue.runelite.plugins.rsnhider;
 
+import com.google.inject.Provides;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -34,16 +35,19 @@ import net.runelite.api.events.OverheadTextChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.util.Text;
 
 /*
-I dream dreams of events for all and better times, but until then, BeforeRender will do.
-Alternatively, the lone developer and the inevitable mental breakdown.
-Peace to: r189, he.cc
- */
+Mental breakdown 2: electric boogaloo
+
+Alexa, play sea shanty two.
+Peace to:
+	r189, he.cc
+*/
 @PluginDescriptor(
 	name = "RSN Hider",
 	description = "Hides your rsn for streamers.",
@@ -58,20 +62,17 @@ public class RsnHiderPlugin extends Plugin
 	@Inject
 	private ClientThread clientThread;
 
+	@Inject
+	private RsnHiderConfig config;
+
 	private static String fakeRsn;
 
 	private static final String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-	public static String randomAlphaNumeric(int count)
+	@Provides
+	private RsnHiderConfig getConfig(ConfigManager configManager)
 	{
-		StringBuilder builder = new StringBuilder();
-		int i = count;
-		while (i-- != 0)
-		{
-			int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
-			builder.append(ALPHA_NUMERIC_STRING.charAt(character));
-		}
-		return builder.toString();
+		return configManager.getConfig(RsnHiderConfig.class);
 	}
 
 	@Override
@@ -94,15 +95,25 @@ public class RsnHiderPlugin extends Plugin
 			return;
 		}
 
-		updateChatbox();
-
-		/*for (Widget widgetRoot : client.getWidgetRoots())
+		if (config.hideWidgets())
 		{
-			processWidget(widgetRoot);
-		}*/
+			// do every widget
+			for (Widget widgetRoot : client.getWidgetRoots())
+			{
+				processWidget(widgetRoot);
+			}
+		}
+		else
+		{
+			// just do the chatbox
+			updateChatbox();
+		}
 	}
 
-	// unused for now
+	/**
+	 * Recursively traverses widgets looking for text containing the players name, replacing it if necessary
+	 * @param widget The root widget to process
+	 */
 	private void processWidget(Widget widget)
 	{
 		if (widget == null)
@@ -198,5 +209,17 @@ public class RsnHiderPlugin extends Plugin
 			textIn = partOne + fakeRsn + partTwo;
 		}
 		return textIn;
+	}
+
+	private static String randomAlphaNumeric(int count)
+	{
+		StringBuilder builder = new StringBuilder();
+		int i = count;
+		while (i-- != 0)
+		{
+			int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
+			builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+		}
+		return builder.toString();
 	}
 }
