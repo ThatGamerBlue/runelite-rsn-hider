@@ -37,6 +37,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.util.Text;
@@ -78,13 +79,24 @@ public class RsnHiderPlugin extends Plugin
 	@Override
 	public void startUp()
 	{
-		fakeRsn = randomAlphaNumeric(12);
+		setFakeRsn();
 	}
 
 	@Override
 	public void shutDown()
 	{
 		clientThread.invokeLater(() -> client.runScript(ScriptID.CHAT_PROMPT_INIT));
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (!event.getGroup().equals("rsnhider"))
+		{
+			return;
+		}
+
+		setFakeRsn();
 	}
 
 	@Subscribe
@@ -108,6 +120,10 @@ public class RsnHiderPlugin extends Plugin
 			// just do the chatbox
 			updateChatbox();
 		}
+	}
+
+	private void setFakeRsn() {
+		fakeRsn = config.customRsn().equals("") ? randomAlphaNumeric(12) : config.customRsn();
 	}
 
 	/**
