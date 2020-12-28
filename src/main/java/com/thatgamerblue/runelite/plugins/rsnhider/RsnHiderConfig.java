@@ -16,4 +16,14 @@ public interface RsnHiderConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		name = "Custom rsn",
+		keyName = "customRsn",
+		description = "Use a custom rsn instead of a random rsn"
+	)
+	default String customRsn()
+	{
+		return "";
+	}
 }
