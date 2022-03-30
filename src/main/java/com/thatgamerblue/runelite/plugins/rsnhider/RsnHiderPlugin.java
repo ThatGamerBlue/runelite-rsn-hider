@@ -66,7 +66,8 @@ public class RsnHiderPlugin extends Plugin
 	@Inject
 	private RsnHiderConfig config;
 
-	private static String fakeRsn;
+	private String fakeRsn;
+	private boolean forceUpdate = false;
 
 	private static final String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -123,6 +124,7 @@ public class RsnHiderPlugin extends Plugin
 	}
 
 	private void setFakeRsn() {
+		forceUpdate = true;
 		fakeRsn = config.customRsn().equals("") ? randomAlphaNumeric(12) : config.customRsn();
 	}
 
@@ -169,12 +171,13 @@ public class RsnHiderPlugin extends Plugin
 
 		//noinspection ConstantConditions
 		String playerRsn = Text.toJagexName(client.getLocalPlayer().getName());
-		if (Text.standardize(chatbox[0]).contains(Text.standardize(playerRsn)))
+		if (forceUpdate || Text.standardize(chatbox[0]).contains(Text.standardize(playerRsn)))
 		{
 			chatbox[0] = fakeRsn;
 		}
 
-		chatboxTypedText.setText(chatbox[0] + ":" + chatbox[1]);
+		forceUpdate = false;
+		chatboxTypedText.setText(chatbox[0] + ":" + (chatbox.length > 1 ? chatbox[1] : ""));
 	}
 
 	@Subscribe
