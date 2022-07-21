@@ -219,12 +219,18 @@ public class RsnHiderPlugin extends Plugin
 		//noinspection ConstantConditions
 		String playerRsn = Text.toJagexName(client.getLocalPlayer().getName());
 		String standardized = Text.standardize(playerRsn);
-		while (Text.standardize(textIn).contains(standardized))
-		{
+		int startIdx = 0;
+		while (Text.standardize(textIn.substring(startIdx)).contains(standardized)) {
 			int idx = textIn.replace("\u00A0", " ").toLowerCase().indexOf(playerRsn.toLowerCase());
 			int length = playerRsn.length();
 			String partOne = textIn.substring(0, idx);
 			String partTwo = textIn.substring(idx + length);
+			startIdx = idx + fakeRsn.length();
+			// Don't do anything if the text has already been replaced.
+			String textAtIdx = textIn.substring(idx, Math.min(textIn.length(), idx + fakeRsn.length()));
+			if (textAtIdx.equals(fakeRsn)) {
+				continue;
+			}
 			textIn = partOne + fakeRsn + partTwo;
 		}
 		return textIn;
