@@ -170,7 +170,7 @@ public class RsnHiderPlugin extends Plugin
 		String[] chatbox = chatboxTypedText.getText().split(":", 2);
 
 		//noinspection ConstantConditions
-		String playerRsn = Text.toJagexName(client.getLocalPlayer().getName());
+		String playerRsn = client.getLocalPlayer().getName();
 		if (forceUpdate || Text.standardize(chatbox[0]).contains(Text.standardize(playerRsn)))
 		{
 			chatbox[0] = fakeRsn;
@@ -217,7 +217,7 @@ public class RsnHiderPlugin extends Plugin
 	private String replaceRsn(String textIn)
 	{
 		//noinspection ConstantConditions
-		String playerRsn = Text.toJagexName(client.getLocalPlayer().getName());
+		String playerRsn = client.getLocalPlayer().getName();
 		String standardized = Text.standardize(playerRsn);
 		while (Text.standardize(textIn).contains(standardized))
 		{
