@@ -184,7 +184,7 @@ public class RsnHiderPlugin extends Plugin
 	private void onChatMessage(ChatMessage event)
 	{
 		//noinspection ConstantConditions
-		if (client.getLocalPlayer().getName() == null)
+		if (client.getLocalPlayer() == null || client.getLocalPlayer().getName() == null)
 		{
 			return;
 		}
